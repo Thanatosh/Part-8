@@ -7,8 +7,8 @@
   "version": "1.0.0",
   "description": "GraphQL",
   "main": "App.js",
-  "devDependencies": {},
   "scripts": {
+    "start": "node App.js",
     "test": "test"
   },
   "repository": {
