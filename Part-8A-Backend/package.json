@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "@apollo/server": "^4.10.4",
+    "graphql": "^16.9.0"
+  },
+  "name": "part-8a-backend",
+  "version": "1.0.0",
+  "description": "GraphQL",
+  "main": "App.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Thanatosh/Part-8.git"
+  },
+  "author": "J.H",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Thanatosh/Part-8/issues"
+  },
+  "homepage": "https://github.com/Thanatosh/Part-8#readme"
+}
