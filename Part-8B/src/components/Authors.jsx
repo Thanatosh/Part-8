@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { gql, useQuery, useMutation } from "@apollo/client";
+import Select from 'react-select';
 
 const ALL_AUTHORS = gql`
   query {
@@ -21,8 +22,8 @@ const EDIT_BIRTHYEAR = gql`
 `
 
 const Authors = (props) => {
-  const [name, setName] = useState('')
   const [born, setBorn] = useState('')
+  const [selectedAuthor, setSelectedAuthor] = useState(null);
 
   const [ changeYear ] = useMutation(EDIT_BIRTHYEAR)
   const { loading, error, data } = useQuery(ALL_AUTHORS, {
@@ -36,11 +37,18 @@ const Authors = (props) => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
+  const authorOptions = data.allAuthors.map((author) => ({
+    value: author.name,
+    label: author.name,
+  }));
+
   const submit = async (event) => {
     event.preventDefault()
-    changeYear({ variables: { name, born: parseInt(born) } })
-    setName('')
-    setBorn('')
+    if (selectedAuthor) {
+      await changeYear({ variables: { name: selectedAuthor.value, born: parseInt(born) } })
+      setSelectedAuthor(null);
+      setBorn('')
+    }
   }
 
   return (
@@ -66,9 +74,11 @@ const Authors = (props) => {
         <h3>Set birthyear</h3>
         <form onSubmit={submit}>
           <div>
-            Name: <input
-              value={name}
-              onChange={({ target }) => setName(target.value)}
+          Name: 
+            <Select
+              value={selectedAuthor}
+              onChange={setSelectedAuthor}
+              options={authorOptions}
             />
           </div>
           <div>
