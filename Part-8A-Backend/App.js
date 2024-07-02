@@ -3,13 +3,14 @@ const { startStandaloneServer } = require('@apollo/server/standalone')
 const mongoose = require('mongoose')
 const Author = require('./models/Author')
 const Book = require('./models/Book')
+const { GraphQLError } = require('graphql')
 
 mongoose.set('strictQuery', false)
 require('dotenv').config()
 
 const MONGODB_URI = process.env.MONGODB_URI
 
-console.log('connecting to', MONGODB_URI)
+console.log('connecting to MongoDB')
 
 mongoose.connect(MONGODB_URI)
   .then(() => {
@@ -83,17 +84,42 @@ const resolvers = {
         await author.save()
       }
       const book = new Book({ ...args, author: author._id })
-      await book.save()
+      try {
+        await book.save()
+      } catch (error) {
+        throw new GraphQLError('Saving Book failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args,
+            error
+          }
+        })
+      }
       return book.populate('author')
     },
     editAuthor: async (root, args) => {
       const author = await Author.findOne({ name: args.name })
       if (!author) {
-        throw new Error('Author not found')
+        throw new GraphQLError('Author not found', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.name
+          }
+        })
       }
 
       author.born = args.setBornTo
-      await author.save()
+      try {
+        await author.save()
+      } catch (error) {
+        throw new GraphQLError('Editing Author failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args,
+            error
+          }
+        })
+      }
       return author
     }
   }
