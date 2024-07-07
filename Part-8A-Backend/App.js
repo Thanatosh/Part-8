@@ -80,9 +80,16 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
-    bookCount: () => Book.collection.countDocuments(),
-    authorCount: () => Author.collection.countDocuments(),
+    bookCount: async () => {
+      console.log("bookCount query executed");
+      return Book.collection.countDocuments();
+    },
+    authorCount: async () => {
+      console.log("authorCount query executed");
+      return Author.collection.countDocuments();
+    },
     allBooks: async (root, args) => {
+      console.log("allBooks query executed with args:", args);
       let filteredBooks = await Book.find({}).populate('author')
       if (args.name) {
         filteredBooks = filteredBooks.filter(book => book.author.name === args.name)
@@ -92,16 +99,23 @@ const resolvers = {
       }
       return filteredBooks
     },
-    allAuthors: async () => await Author.find({}),
+    allAuthors: async () => {
+      console.log("allAuthors query executed");
+      return await Author.find({});
+    },
     me: (root, args, context) => {
       return context.currentUser
     },
   },
   Author: {
-    bookCount: (parent) => Book.countDocuments({ author: parent._id }),
+    bookCount: async (parent) => {
+      console.log(`bookCount for author ${parent._id} executed`);
+      return Book.countDocuments({ author: parent._id });
+    },
   },
   Mutation: {
     addBook: async (root, args, context) => {
+      console.log("addBook mutation executed with args:", args);
       let author = await Author.findOne({ name: args.author })
       const currentUser = context.currentUser
 
@@ -132,6 +146,7 @@ const resolvers = {
       return book.populate('author')
     },
     editAuthor: async (root, args, context) => {
+      console.log("editAuthor mutation executed with args:", args);
       const author = await Author.findOne({ name: args.name })
       const currentUser = context.currentUser
 
@@ -167,6 +182,7 @@ const resolvers = {
       return author
     },
     createUser: async (root, args) => {
+      console.log("createUser mutation executed with args:", args);
       const user = new User({ username: args.username, favoriteGenre: args.favoriteGenre })
   
       return user.save()
@@ -181,6 +197,7 @@ const resolvers = {
         })
     },
     login: async (root, args) => {
+      console.log("login mutation executed with args:", args);
       const user = await User.findOne({ username: args.username })
   
       if ( !user || args.password !== 'secret' ) {
