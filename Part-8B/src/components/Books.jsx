@@ -1,21 +1,45 @@
 import { useQuery } from "@apollo/client";
-import { ALL_BOOKS } from "../queries";
+import { useState } from "react";
+import { ALL_BOOKS, ALL_GENRES } from "../queries";
 
 const Books = (props) => {
+  const [selectedGenre, setSelectedGenre] = useState(null);
   const { loading, error, data } = useQuery(ALL_BOOKS, {
+    variables: { genre: selectedGenre },
     skip: !props.show,
   });
+
+  const { loading: genresLoading, error: genresError, data: genresData } = useQuery(ALL_GENRES);
 
   if (!props.show) {
     return null
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading || genresLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
+  if (genresError) return <p>Error: {genresError.message}</p>;
+
+  const genres = genresData.allGenres;
 
   return (
     <div>
       <h2>Books</h2>
+
+      <div>
+        <label htmlFor="genres">Filter by genre: </label>
+        <select
+          id="genres"
+          value={selectedGenre || ""}
+          onChange={(e) => setSelectedGenre(e.target.value || null)}
+        >
+          <option value="">All genres</option>
+          {genres.map((genre) => (
+            <option key={genre} value={genre}>
+              {genre}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <table>
         <tbody>
