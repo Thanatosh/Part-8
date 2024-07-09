@@ -41,6 +41,7 @@ const typeDefs = `
     allGenres: [String!]!
     bookAuthor(name: String!): [Book!]!
     me: User
+    recommendedBooks: [Book!]!
   }
 
   type Book {
@@ -113,6 +114,13 @@ const resolvers = {
     me: (root, args, context) => {
       return context.currentUser
     },
+    recommendedBooks: async (root, args, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError('Not authenticated');
+      }
+      const books = await Book.find({ genres: context.currentUser.favoriteGenre }).populate('author');
+      return books;
+    }
   },
   Author: {
     bookCount: async (parent) => {
