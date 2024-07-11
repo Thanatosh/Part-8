@@ -91,15 +91,11 @@ const resolvers = {
       return Author.collection.countDocuments();
     },
     allBooks: async (root, args) => {
-      console.log("allBooks query executed with args:", args);
-      let filteredBooks = await Book.find({}).populate('author')
-      if (args.name) {
-        filteredBooks = filteredBooks.filter(book => book.author.name === args.name)
-      }
+      let filter = {};
       if (args.genre) {
-        filteredBooks = filteredBooks.filter(book => book.genres.includes(args.genre))
+        filter.genres = { $in: [args.genre] };
       }
-      return filteredBooks
+      return Book.find(filter).populate('author');
     },
     allAuthors: async () => {
       console.log("allAuthors query executed");

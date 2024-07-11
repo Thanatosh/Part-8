@@ -9,7 +9,7 @@ const Books = (props) => {
     skip: !props.show,
   });
 
-  const { loading: genresLoading, error: genresError, data: genresData } = useQuery(ALL_GENRES);
+  const { loading: genresLoading, error: genresError, data: genresData, refetch } = useQuery(ALL_GENRES);
 
   if (!props.show) {
     return null
@@ -21,18 +21,18 @@ const Books = (props) => {
 
   const genres = genresData.allGenres;
 
+  const handleGenreChange = (event) => {
+    const newGenre = event.target.value;
+    setSelectedGenre(newGenre);
+    refetch({ genre: newGenre });
+  };
+
   return (
     <div>
       <h2>Books</h2>
-
       <div>
-        <label htmlFor="genres">Filter by genre: </label>
-        <select
-          id="genres"
-          value={selectedGenre || ""}
-          onChange={(e) => setSelectedGenre(e.target.value || null)}
-        >
-          <option value="">All genres</option>
+        <select onChange={handleGenreChange} value={selectedGenre || ''}>
+          <option value=''>All Genres</option>
           {genres.map((genre) => (
             <option key={genre} value={genre}>
               {genre}
@@ -40,7 +40,6 @@ const Books = (props) => {
           ))}
         </select>
       </div>
-
       <table>
         <tbody>
           <tr>
