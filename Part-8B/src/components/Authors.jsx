@@ -1,17 +1,17 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
-import Select from 'react-select';
+import Select from "react-select";
 import { ALL_AUTHORS, EDIT_BIRTHYEAR } from "../queries";
 
 const Authors = (props) => {
-  const [born, setBorn] = useState('');
+  const [born, setBorn] = useState("");
   const [selectedAuthor, setSelectedAuthor] = useState(null);
   const { loading, error, data, refetch } = useQuery(ALL_AUTHORS, {
     skip: !props.show,
   });
-  
+
   const [changeYear] = useMutation(EDIT_BIRTHYEAR, {
-    onCompleted: () => refetch()
+    onCompleted: () => refetch(),
   });
 
   if (!props.show) {
@@ -27,11 +27,13 @@ const Authors = (props) => {
   }));
 
   const submit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
     if (selectedAuthor) {
-      await changeYear({ variables: { name: selectedAuthor.value, born: parseInt(born) } })
+      await changeYear({
+        variables: { name: selectedAuthor.value, born: parseInt(born) },
+      });
       setSelectedAuthor(null);
-      setBorn('');
+      setBorn("");
     }
   };
 
@@ -58,7 +60,7 @@ const Authors = (props) => {
         <h3>Set birthyear</h3>
         <form onSubmit={submit}>
           <div>
-          Name: 
+            Name:
             <Select
               value={selectedAuthor}
               onChange={setSelectedAuthor}
@@ -66,13 +68,14 @@ const Authors = (props) => {
             />
           </div>
           <div>
-            Born: <input
+            Born:{" "}
+            <input
               type="number"
               value={born}
               onChange={({ target }) => setBorn(target.value)}
             />
           </div>
-          <button type='submit'>Change birthyear</button>
+          <button type="submit">Change birthyear</button>
         </form>
       </div>
     </div>

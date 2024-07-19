@@ -1,18 +1,18 @@
-const mongoose = require('mongoose')
-const uniqueValidator = require('mongoose-unique-validator')
+const mongoose = require("mongoose");
+const uniqueValidator = require("mongoose-unique-validator");
 
 const authorSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
     unique: true,
-    minlength: 4
+    minlength: 4,
   },
   born: {
     type: Number,
   },
-})
+});
 
-authorSchema.plugin(uniqueValidator)
+authorSchema.plugin(uniqueValidator);
 
-module.exports = mongoose.model('Author', authorSchema)
+module.exports = mongoose.model("Author", authorSchema);

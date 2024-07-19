@@ -58,6 +58,6 @@ const typeDefs = `
       password: String!
     ): Token
   }
-`
+`;
 
-module.exports = typeDefs
+module.exports = typeDefs;
